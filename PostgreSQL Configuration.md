@@ -190,8 +190,11 @@ docker exec postgres-config df -h
 ### บันทึกผลการทดลอง
 ```
 1. อธิบายหน้าที่คำสั่ง docker exec postgres-config free, docker exec postgres-config df
+ตอบ คำสั่ง free แสดงข้อมูลการใช้งาน RAM ของคอนเทนเนอร์นั้นๆ ,df แสดงข้อมูลการใช้งาน Disk Space ของคอนเทนเนอร์นั้นๆ
 2. option -h ในคำสั่งมีผลอย่างไร
+ตอบ แสดงคำอธิบายการใช้งาน
 3. docker exec postgres-config nproc  แสดงค่าผลลัพธ์อย่างไร
+ตอบ แสดงผลลัพธ์เป็น จำนวนแกนประมวลผล (CPU cores)
 ```
 #### 1.2 เชื่อมต่อและตรวจสอบสถานะปัจจุบัน
 ```bash
@@ -210,7 +213,9 @@ SHOW data_directory;
 ### บันทึกผลการทดลอง
 ```
 1. ตำแหน่งที่อยู่ของไฟล์ configuration อยู่ที่ตำแหน่งใด
+ตอบ  /var/lib/postgresql/data/postgresql.conf
 2. ตำแหน่งที่อยู่ของไฟล์ data อยู่ที่ตำแหน่งใด
+ตอบ /var/lib/postgresql/data
 ```
 -- ตรวจสอบการตั้งค่าปัจจุบัน
 SELECT name, setting, unit, category, short_desc 
@@ -224,6 +229,7 @@ WHERE name IN (
 ```
 บันทึกรูปผลของ configuration ทั้ง 6 ค่า 
 ```
+<img width="1387" height="565" alt="image" src="https://github.com/user-attachments/assets/cf6088a5-8f38-4a2d-90b0-2d9907953027" />
 
 ### Step 2: การปรับแต่งพารามิเตอร์แบบค่อยเป็นค่อยไป
 
