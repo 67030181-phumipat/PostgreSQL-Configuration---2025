@@ -289,6 +289,7 @@ WHERE name = 'work_mem';
 ```
 รูปผลการเปลี่ยนแปลงค่า work_mem
 ```
+<img width="1379" height="554" alt="image" src="https://github.com/user-attachments/assets/d312dd8d-e506-4b4d-a2f6-9f36baf0e964" />
 
 #### 3.3 ปรับแต่ง Maintenance Work Memory
 ```sql
@@ -306,6 +307,7 @@ SHOW maintenance_work_mem;
 ```
 รูปผลการเปลี่ยนแปลงค่า maintenance_work_mem
 ```
+<img width="1368" height="553" alt="image" src="https://github.com/user-attachments/assets/c7fce48e-404c-4f04-8a9a-85824acab144" />
 
 #### 3.4 ปรับแต่ง WAL Buffers
 ```sql
@@ -331,6 +333,7 @@ SHOW wal_buffers;
 ```
 รูปผลการเปลี่ยนแปลงค่า wal_buffers
 ```
+<img width="1401" height="193" alt="image" src="https://github.com/user-attachments/assets/a522b19b-5ba5-4b74-89ff-09630dd4350f" />
 
 #### 3.5 ปรับแต่ง Effective Cache Size
 ```sql
