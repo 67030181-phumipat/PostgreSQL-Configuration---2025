@@ -351,6 +351,7 @@ SHOW effective_cache_size;
 ```
 รูปผลการเปลี่ยนแปลงค่า effective_cache_size
 ```
+<img width="1383" height="508" alt="image" src="https://github.com/user-attachments/assets/7e4a0623-aa55-43ea-8c33-4708d43780bc" />
 
 ### Step 4: ตรวจสอบผล
 
@@ -380,6 +381,7 @@ ORDER BY name;
 ```
 รูปผลการลัพธ์การตั้งค่า
 ```
+<img width="1372" height="553" alt="image" src="https://github.com/user-attachments/assets/443edccf-7d6b-41b7-9a5c-26fdd33cc184" />
 
 ### Step 5: การสร้างและทดสอบ Workload
 
@@ -422,9 +424,13 @@ LIMIT 1000;
 ```
 ### ผลการทดลอง
 ```
-1. คำสั่ง EXPLAIN(ANALYZE,BUFFERS) คืออะไร 
+1. คำสั่ง EXPLAIN(ANALYZE,BUFFERS) คืออะไร
+ตอบ EXPLAIN เป็นคำสั่งใน PostgreSQL ที่ใช้สำหรับดูแผนการทำงานของ Query
+ANALYZE คำสั่งนี้จะทำการรัน Query นั้นจริงๆ และแสดงผลลัพธ์ของแผนการทำงานพร้อมกับค่าสถิติที่เกิดขึ้นจริง
+BUFFERS เพิ่มข้อมูลเกี่ยวกับ I/O หรือการใช้งานหน่วยความจำ
 2. รูปผลการรัน
 3. อธิบายผลลัพธ์ที่ได้
+ตอบ Buffer Hit Ratio = 4143 shared hits Parallel Processing = 2 workers Memory Efficient only 182kb Fast Execution  236.086 ms
 ```
 ```sql
 -- ทดสอบ Hash operation
@@ -440,8 +446,12 @@ LIMIT 100;
 ```
 1. รูปผลการรัน
 2. อธิบายผลลัพธ์ที่ได้ 
+ตอบ Total Buffer Reads: 6 blocks Execution Time: 0.519 ms Planning Time:  0.550 ms
 3. การสแกนเป็นแบบใด เกิดจากเหตุผลใด
+ตอบ Index Only Scan มี index บน column number
 ```
+<img width="1365" height="224" alt="image" src="https://github.com/user-attachments/assets/3f1346d8-bb24-4ce8-9470-a8db20d8e452" />
+
 #### 5.3 การทดสอบ Maintenance Work Memory
 ```sql
 -- ทดสอบ CREATE INDEX (จะใช้ maintenance_work_mem)
@@ -1481,9 +1491,25 @@ Estimated Usage = 2GB + (32MB × 100 × 0.5) + 512MB + 64MB
 
 ## คำถามท้ายการทดลอง
 1. หน่วยความจำใดบ้างที่เป็น shared memory และมีหลักในการตั้งค่าอย่างไร
+ตอบ shared_buffers = ปกติ 25–40% ของRAM work_mem memory = ต่อ operation; ต้องคูณจำนวน concurrent operations
+maintenance_work_mem = กำหนดสูงกว่า work_mem แต่ไม่ควรใช้หมด RAM พร้อมกัน
 2. Work memory และ maintenance work memory คืออะไร มีหลักการในการกำหนดค่าอย่างไร
+ตอบ work_mem = memory ต่อ query operation (sort, hash join, aggregation) ควรคำนวณโดย work_mem × max_parallel_operations × active_connections < RAM ที่เหลือ
+maintenance work memory = memory สำหรับ VACUUM, CREATE INDEX, ALTER TABLE ใหญ่กว่าปกติ เพราะ operation เหล่านี้ใช้ครั้งเดียว ไม่ซ้ำพร้อมกันหลาย connection
 3. หากมี RAM 16GB และต้องการกำหนด connection = 200 ควรกำหนดค่า work memory และ maintenance work memory อย่างไร
+ตอบ work_mem = (16GB × 0.25) / 200 ≈ 20MB
+maintenance_work_mem = work_mem × 8 ≈ 160MB หรือ 16GB × 0.05 ≈ 800MB
 4. ไฟล์ postgresql.conf และ postgresql.auto.conf  มีความสัมพันธ์กันอย่างไร
+ตอบ ค่าใน postgresql.auto.conf จะ override postgresql.conf เมื่อตอน server start หรือ reload
 5. Buffer hit ratio คืออะไร
+ตอบ สัดส่วนการอ่านข้อมูลจาก memory แทน disk ควร >95% → ยิ่งสูง → query ใช้ memory มาก ลด disk I/O
 6. แสดงผลการคำนวณ การกำหนดค่าหน่วยความจำต่าง ๆ โดยอ้างอิงเครื่องของตนเอง
+ตอบ Parameter	            ปัจจุบัน	            แนะนำ
+shared_buffers	      128MB	      512MB (25% ของ RAM)
+work_mem	            20MB	          เหมาะสม
+maintenance_work_mem	256MB	          เหมาะสม
+effective_cache_size	1536MB	        เหมาะสม
 7. การสแกนของฐานข้อมูล PostgreSQL มีกี่แบบอะไรบ้าง เปรียบเทียบการสแกนแต่ละแบบ
+ตอบ Sequential Scan = 	อ่านทุกแถวใน table	/ table เล็กหรือไม่มี index	
+Index Scan	ใช้ index =  หาตำแหน่งแถว → เข้าถึง table / 	column มี index	
+Index Only Scan = 	อ่านจาก index โดยไม่ต้องเข้าถึง table	/ index ครอบคลุมข้อมูล query
